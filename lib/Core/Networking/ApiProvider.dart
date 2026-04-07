@@ -295,8 +295,7 @@ class ApiProvider {
     if (response.statusCode != 200) return 0;
 
     final responseData = json.decode(response.body) as Map<String, dynamic>;
-    return responseData['status'] == 'success' &&
-            responseData['valid'] == true
+    return responseData['status'] == 'success' && responseData['valid'] == true
         ? 1
         : 0;
   }
@@ -383,6 +382,7 @@ class ApiProvider {
             ))
         .toList();
   }
+
   Future<Map<String, dynamic>> registerDriver({
     required String nombre,
     required String telefono,
@@ -394,31 +394,31 @@ class ApiProvider {
     required String color,
     required int anio,
     required int categoriaId,
-    String email  = '',
+    String email = '',
     String ciudad = '',
-    String pais   = 'Ecuador',
+    String pais = 'Ecuador',
     String provincia = '',
-    String canton    = '',
+    String canton = '',
     String tipoConductor = 'independiente',
     int? cooperativaId,
   }) async {
     final url = '${Constants.apiBaseUrl}/register_driver.php';
     try {
       final body = {
-        'nombre':       nombre,
-        'email':        email,
-        'telefono':     telefono,
-        'cedula':       cedula,
-        'password':     password,
-        'ciudad':       ciudad,
-        'pais':         pais,
-        'provincia':    provincia,
-        'canton':       canton,
-        'marca':        marca,
-        'modelo':       modelo,
-        'placa':        placa,
-        'color':        color,
-        'anio':         anio.toString(),
+        'nombre': nombre,
+        'email': email,
+        'telefono': telefono,
+        'cedula': cedula,
+        'password': password,
+        'ciudad': ciudad,
+        'pais': pais,
+        'provincia': provincia,
+        'canton': canton,
+        'marca': marca,
+        'modelo': modelo,
+        'placa': placa,
+        'color': color,
+        'anio': anio.toString(),
         'categoria_id': categoriaId.toString(),
         'tipo_conductor': tipoConductor,
       };
@@ -426,15 +426,20 @@ class ApiProvider {
         body['cooperativa_id'] = cooperativaId.toString();
       }
 
-      final response = await http.post(
-        Uri.parse(url),
-        body: body,
-      ).timeout(const Duration(seconds: 15));
+      final response = await http
+          .post(
+            Uri.parse(url),
+            body: body,
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
       }
-      return {'status': 'error', 'message': 'Error de conexión (HTTP ${response.statusCode})'};
+      return {
+        'status': 'error',
+        'message': 'Error de conexión (HTTP ${response.statusCode})'
+      };
     } catch (e) {
       return {'status': 'error', 'message': 'Error de red o timeout'};
     }
@@ -442,7 +447,7 @@ class ApiProvider {
 
   // ── Sube un documento o foto de perfil del conductor ─────────
   Future<Map<String, dynamic>> uploadDocumentoConductor({
-    required int    conductorId,
+    required int conductorId,
     required String tipo,
     required String imagenBase64,
   }) async {
@@ -451,8 +456,8 @@ class ApiProvider {
       final response = await http.post(
         Uri.parse(url),
         body: {
-          'conductor_id':  conductorId.toString(),
-          'tipo':          tipo,
+          'conductor_id': conductorId.toString(),
+          'tipo': tipo,
           'imagen_base64': imagenBase64,
         },
       ).timeout(const Duration(seconds: 30)); // imágenes pueden tardar más
@@ -460,23 +465,31 @@ class ApiProvider {
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
       }
-      return {'status': 'error', 'message': 'Error HTTP ${response.statusCode}'};
+      return {
+        'status': 'error',
+        'message': 'Error HTTP ${response.statusCode}'
+      };
     } catch (e) {
       return {'status': 'error', 'message': 'Error al subir documento: $e'};
     }
   }
 
   // ── Obtiene el estado de los documentos de un conductor ───────
-  Future<Map<String, dynamic>> obtenerDocumentosConductor(int conductorId) async {
-    final url = '${Constants.apiBaseUrl}/obtener_documentos_conductor.php?conductor_id=$conductorId';
+  Future<Map<String, dynamic>> obtenerDocumentosConductor(
+      int conductorId) async {
+    final url =
+        '${Constants.apiBaseUrl}/obtener_documentos_conductor.php?conductor_id=$conductorId';
     try {
-      final response = await http.get(Uri.parse(url))
-          .timeout(const Duration(seconds: 10));
+      final response =
+          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
       }
-      return {'status': 'error', 'message': 'Error HTTP ${response.statusCode}'};
+      return {
+        'status': 'error',
+        'message': 'Error HTTP ${response.statusCode}'
+      };
     } catch (e) {
       return {'status': 'error', 'message': 'Error de red: $e'};
     }
@@ -494,7 +507,10 @@ class ApiProvider {
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
       }
-      return {'status': 'error', 'message': 'Error HTTP ${response.statusCode}'};
+      return {
+        'status': 'error',
+        'message': 'Error HTTP ${response.statusCode}'
+      };
     } catch (e) {
       return {'status': 'error', 'message': 'Error de red: $e'};
     }
@@ -529,26 +545,32 @@ class ApiProvider {
   Future<Map<String, dynamic>> obtenerCooperativas() async {
     final url = '${Constants.apiBaseUrl}/obtener_cooperativas.php';
     try {
-      final response = await http.get(Uri.parse(url))
-          .timeout(const Duration(seconds: 10));
+      final response =
+          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         return json.decode(response.body) as Map<String, dynamic>;
       }
-      return {'status': 'error', 'message': 'Error HTTP ${response.statusCode}'};
+      return {
+        'status': 'error',
+        'message': 'Error HTTP ${response.statusCode}'
+      };
     } catch (e) {
       return {'status': 'error', 'message': 'Error de red: $e'};
     }
   }
 
   // ── Método genérico POST para endpoints personalizados ────────
-  Future<Map<String, dynamic>> post(String endpoint, Map<String, dynamic> body) async {
+  Future<Map<String, dynamic>> post(
+      String endpoint, Map<String, dynamic> body) async {
     final url = '${Constants.apiBaseUrl}/$endpoint';
     try {
-      final response = await http.post(
-        Uri.parse(url),
-        body: body.map((key, value) => MapEntry(key, value.toString())),
-      ).timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse(url),
+            body: body.map((key, value) => MapEntry(key, value.toString())),
+          )
+          .timeout(const Duration(seconds: 10));
 
       print('>>> [POST] HTTP ${response.statusCode} desde $url');
       if (response.statusCode != 200) {
