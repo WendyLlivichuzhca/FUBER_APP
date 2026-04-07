@@ -540,4 +540,32 @@ class ApiProvider {
       return {'status': 'error', 'message': 'Error de red: $e'};
     }
   }
+
+  // ── Método genérico POST para endpoints personalizados ────────
+  Future<Map<String, dynamic>> post(String endpoint, Map<String, dynamic> body) async {
+    final url = '${Constants.apiBaseUrl}/$endpoint';
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        body: body.map((key, value) => MapEntry(key, value.toString())),
+      ).timeout(const Duration(seconds: 10));
+
+      print('>>> [POST] HTTP ${response.statusCode} desde $url');
+      if (response.statusCode != 200) {
+        print('>>> [POST] Body (non-200): ${response.body}');
+        return <String, dynamic>{
+          'status': 'error',
+          'message': 'Error HTTP ${response.statusCode}',
+        };
+      }
+
+      return json.decode(response.body) as Map<String, dynamic>;
+    } catch (e) {
+      print('>>> [POST] Error: $e');
+      return <String, dynamic>{
+        'status': 'error',
+        'message': 'Error de conexión',
+      };
+    }
+  }
 }
